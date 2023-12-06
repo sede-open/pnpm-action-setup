@@ -1,0 +1,21 @@
+name: "On: Push"
+
+on: push
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_name != 'master' }}
+
+jobs:
+  code_quality:
+    name: Code quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+      - uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
